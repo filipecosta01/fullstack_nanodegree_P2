@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <header>
+    <title>Login Validation</title>
+  </header>
+
+  <body>
+    <h1>Log In</h1>
+    <form method="post">
+      <label>
+        Username
+        <input name="username" type="text" value="{{username}}">
+        <span style="color: red;">{{invalid_username}}</span>
+      </label>
+      <br>
+      <label>
+        Password
+        <input name="password" type="password">
+        <span style="color: red;">{{invalid_password}}</span>
+      </label>
+      <br>
+      <input type="submit">
+    </form>
+  </body>
+</html>

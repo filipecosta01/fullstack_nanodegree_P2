@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}
+The Blog - Post Details
+{% endblock %}
+
+{% block name_area %}
+  <h3 class="text-center navbar-text">
+    {% if user %}
+      Viewing as {{user.username}}
+    {% else %}
+      Viewing as unknown
+    {% endif %}
+  </h3>
+{% endblock %}
+
+{% block logged_area %}
+  {% if user %}
+  <a href="/logout">Logout</a>
+  {% else %}
+  <a href="/login">Login</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<article>
+  <header class="content-separator">
+    <div class="row is-flex">
+      <div class="col-md-6 text-left">
+        <h2>
+          {{post.subject}}
+        </h2>
+      </div>
+      {% if user and post.user.key().id() == user.key().id() %}
+      <div class="col-md-4 text-right post-right-content">
+      {% else %}
+      <div class="col-md-6 text-right post-right-content">
+      {% endif %}
+        <h5>
+          {{post.created.strftime('%B %d, %Y - %I:%M %p')}}
+        </h5>
+      </div>
+      {% if user and post.user.key().id() == user.key().id() %}
+      <div class="col-md-2 text-right edit-post-buttons">
+        <div class="row is-flex">
+          <div class="col-md-6 text-right">
+            <form action="/blog/post/edit/{{post.key().id()}}" method="GET">
+              <button class="btn btn-primary fa fa-pencil" type="submit">
+                Edit
+              </button>
+            </form>
+          </div>
+          <div class="col-md-6 text-left">
+            <form method="POST" action="/post/delete/{{post.key().id()}}">
+              <button class="btn btn-danger fa fa-trash-o" type="submit" >
+                Delete
+              </a>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </header>
+  <section class="section">
+    <pre>{{post.content}}</pre>
+  </section>
+  <section class="section text-right">
+    <form action="/blog/like/{{post.key().id()}}" method="POST">
+      <button class="btn btn-like fa fa-thumbs-up"> Like</button>
+    </form>
+  </section>
+</article>
+
+<div class="row">
+  <div class="col-md-12">
+    <header class="content-separator">
+      <h2>
+        Comments
+      </h2>
+    </header>
+  </div>
+</div>
+
+{% if comments %}
+  <div class="row comments-area">
+    {% for comment in comments %}
+    <article class="col-md-12">
+      <section class="section">
+        <div class="row">
+          <div class="col-md-8 text-left">
+            <h5>
+              From: {{comment.user.username}}
+            </h5>
+          </div>
+
+          {% if user and comment.user.key().id() == user.key().id() %}
+          <div class="col-md-2 text-right post-right-content">
+          {% else %}
+          <div class="col-md-4 text-right post-right-content">
+          {% endif %}
+            <h5>
+              {{comment.created.strftime('%B %d, %Y - %I:%M %p')}}
+            </h5>
+          </div>
+
+          {% if user and comment.user.key().id() == user.key().id() %}
+          <div class="col-md-2">
+            <div class="row">
+              <div class="col-md-6 text-right">
+                <form action="/blog/comment/edit/{{comment.key().id()}}" method="GET">
+                  <button class="btn btn-primary fa fa-pencil" type="submit">
+                    Edit
+                  </button>
+                </form>
+              </div>
+
+              <div class="col-md-6 text-left">
+                <form method="POST" action="/blog/comment/delete/{{comment.key().id()}}">
+                  <button class="btn btn-danger fa fa-trash-o" type="submit" >
+                    Delete
+                  </a>
+                </form>
+              </div>
+
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <pre class="single-comment-area">{{comment.comment}}</pre>
+          </div>
+        </div>
+      </section>
+    </article>
+  {% endfor %}
+  </div>
+{% else %}
+<div class="row">
+  <div class="col-md-12">
+    <h3>
+      No comments for this post.
+    </h3>
+  </div>
+</div>
+{% endif %}
+
+{% if user %}
+<div class="row">
+  <div class="col-md-12">
+    <header class="content-separator">
+      <h2>
+        New Comment
+      </h2>
+    </header>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <section class="section">
+      <div class="row">
+        <div class="col-md-12 text-left">
+          {% if comment_error %}
+          <div class="alert alert-danger">
+            <strong>Error!</strong> You have to fill the comment area before submit.
+          </div>
+          {% endif %}
+          <h5>
+            <strong>From</strong>: {{user.username}}
+          </h5>
+        </div>
+      </div>
+      <form method="POST">
+        <div class="form-group">
+          <label for="comment"><strong>Comment</strong>:</label>
+          <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-submit">Submit</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% else %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="alert alert-warning">
+      <strong>Warning!</strong> Unkown users cannot include comments.
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

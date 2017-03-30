@@ -1,0 +1,113 @@
+body {
+  max-width: 80%;
+  margin: 0 auto;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.icon {
+  font-size: 22px;
+}
+
+.btn-like {
+  background-color: #8d4792;
+  border-color: #9c9c9c;
+  color: white;
+}
+
+.btn-like:hover {
+  background-color: #4d3474;
+  border-color: #9c9c9c;
+  color: white;
+}
+
+.btn-submit {
+  background-color: #8d4792;
+  border-color: #9c9c9c;
+  color: white;
+}
+
+.btn-submit:hover {
+  background-color: #4d3474;
+  border-color: #9c9c9c;
+  color: white;
+}
+
+.single-comment-area {
+  background-color: #d4d4d4;
+}
+
+.logout-text {
+  font-size: 18px;
+  align-self: center;
+  align-items: flex-end;
+}
+
+.navbar-text {
+  color: #d4d4d4;
+}
+
+.navbar {
+  background-color: #4d3474;
+}
+
+.no-decoration, .no-decoration:hover {
+  text-decoration: none;
+}
+
+.blog-title, .blog-title:hover {
+  text-decoration: none;
+  color: #d4d4d4;
+}
+
+.blog-title h1 {
+  margin-bottom: 20px;
+}
+
+.divider {
+  height: 1px;
+  width:100%;
+  display:block;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+
+.comments-area {
+  overflow: scroll;
+  max-height: 400px;
+}
+
+.content-separator {
+  border-bottom: 2px solid #7d97ad;
+}
+
+.section {
+  margin-top: 10px;
+}
+
+.row.is-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row.is-flex>[class*="col-"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-right-content {
+  align-self: flex-end;
+  color: #7d97ad;
+}
+
+.error-message {
+  color: red;
+}
+
+.end-aligned {
+  align-self: flex-end;
+}
+
+.edit-post-buttons {
+  align-self: flex-end;
+  margin-bottom: 5px;
+}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+The Blog - Error Page
+{% endblock %}
+
+{% block logged_area %}
+  {% if user %}
+  <a href="/logout">Logout</a>
+  {% else %}
+  <a href="/login">Login</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="alert alert-danger">
+      <strong>Error!</strong> {{error}}.
+    </div>
+  </div>
+</div>
+{% endblock %}
