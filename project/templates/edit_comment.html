@@ -9,13 +9,13 @@
 {% endblock %}
 
 {% block name_area %}
-  <h3 class="text-center navbar-text">
-    {% if user %}
-      Viewing as {{user.username}}
-    {% else %}
-      Viewing as unknown
-    {% endif %}
-  </h3>
+<h3 class="text-center navbar-text">
+  {% if user %}
+    Viewing as {{user.username}}
+  {% else %}
+    Viewing as unknown
+  {% endif %}
+</h3>
 {% endblock %}
 
 {% block action_area %}
@@ -26,6 +26,7 @@
   {% endif %}
 {% endblock %}
 
+<!-- Render the main area of the edit comment's page. Only authenticated users will access this page. -->
 {% block content %}
 <div class="col-md-12">
   <div class="row">

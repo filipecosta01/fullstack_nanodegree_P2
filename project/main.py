@@ -292,7 +292,7 @@ class BlogShowPost(Handler):
             like = Like.get_like(user=self.user, post=post).get()
             count_likes = Like.count_likes(post=post)
 
-            self.render("single_post.html", user=self.user, post=post, like=like,
+            self.render("show_post.html", user=self.user, post=post, like=like,
                         count_likes=count_likes, comments=comments
                        )
         else:
@@ -307,7 +307,7 @@ class BlogShowPost(Handler):
 
         if not input_comment:
             comment_error = True
-            return self.render("single_post.html",
+            return self.render("show_post.html",
                                user=self.user, post=post, comments=comments,
                                comment_error=comment_error
                               )
@@ -404,7 +404,7 @@ class BlogEditComment(Handler):
             if not (self.user and comment.user.key().id() == self.user.key().id()):
                 return self.render("error_page.html", error="You are not the owner of this comment")
 
-            return self.render("single_comment.html", user=self.user, comment=comment)
+            return self.render("edit_comment.html", user=self.user, comment=comment)
         else:
             return self.render("error_page.html", error="Comment does not exists")
 
@@ -414,7 +414,7 @@ class BlogEditComment(Handler):
 
         if not input_comment:
             comment_error = True
-            return self.render("single_comment.html", user=self.user, comment=comment,
+            return self.render("edit_comment.html", user=self.user, comment=comment,
                                comment_error=comment_error)
         comment.comment = input_comment
         comment.put()

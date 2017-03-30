@@ -9,13 +9,13 @@
 {% endblock %}
 
 {% block name_area %}
-  <h3 class="text-center navbar-text">
-    {% if user %}
-      Viewing as {{user.username}}
-    {% else %}
-      Viewing as unknown
-    {% endif %}
-  </h3>
+<h3 class="text-center navbar-text">
+  {% if user %}
+    Viewing as {{user.username}}
+  {% else %}
+    Viewing as unknown
+  {% endif %}
+</h3>
 {% endblock %}
 
 {% block action_area %}
@@ -26,8 +26,10 @@
   {% endif %}
 {% endblock %}
 
+<!-- Render the main area of the blog's main page. -->
 {% block content %}
 <div class="col-md-12">
+  <!-- Show the new post button if the user is logged in. -->
   {% if user %}
   <form class="text-right" action="/blog/post/new" method="GET">
     <button type="submit" class="btn btn-submit text-right">
@@ -35,10 +37,12 @@
     </button>
   </form>
   {% endif %}
+  <!-- Show a default message if no posts were retrieved from database. -->
   {% if not posts %}
   <h2 class="text-center">No posts were found in database.</h2>
   {% endif %}
 
+  <!-- Render the posts in the main page. -->
   {% for post in posts %}
 
     <a class="no-decoration" href="/blog/post/{{post.key().id()}}">

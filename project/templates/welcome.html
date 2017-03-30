@@ -10,33 +10,37 @@
 {% endblock %}
 
 {% block action_area %}
-  <a href="/blog">Go to THE BLOG</a>
+<a href="/blog">Go to THE BLOG</a>
 {% endblock %}
 
+<!-- Render the main area of the welcome page. Only authenticated users will access this page. -->
 {% block content %}
 <div class="col-md-12 text-center">
   <h1 class="text-center">Welcome, {{username}}.</h1>
-  <h3>You're now logged in into THE BLOG.</h3>
+  <h3>You're now logged in.</h3>
 
-  <hr >
+  <hr>
 
   <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6 text-left">
       <h4 class="text-center">Some info about THE BLOG</h4>
       <ul>
-        <li>Only authorized users (have registered themselves) can post and like posts.</li>
-        <li>Only other authorized people can post comments inside a post, and like own posts are forbidden.</li>
+        <li>Only authenticated users can post/edit/like posts and like.</li>
+        <li>Only authenticated users can post comments inside a post. Like own posts is forbidden.</li>
+        <li>Unauthenticated users can see post, comments and number of likes, but all the other actions are forbidden.</li>
         <li>The navigation bar contains the title of the page you're currently seeing, and clicking in the main title will lead you to the previous page (or the main one).</li>
       <ul>
     </div>
     <div class="col-md-3"></div>
   </div>
 
-  <hr >
+  <hr>
+
   <form method="GET">
     <div class="form-group">
-      <button class="btn btn-submit" type="submit" formaction="/blog">Click here to go to main page</button>
+      <button class="btn btn-submit" type="submit" formaction="/blog">Go to THE BLOG</button>
     </div>
+  </form>
 </div>
 {% endblock %}

@@ -16,6 +16,7 @@
         <div class="col-md-12 navbar">
           <div class="row is-flex">
             <div class="col-md-2">
+              <!-- The left area of the navbar, displays the name of the user in a session. -->
               {% block name_area %}
               {% endblock %}
             </div>
@@ -24,6 +25,7 @@
               {% endblock %}
             </div>
             <div class="col-md-2 action-area-text">
+              <!-- The right area of the navbar, for login/logout/go to main posts actions. -->
               {% block action_area %}
               {% endblock %}
             </div>
@@ -31,6 +33,7 @@
         </div>
       </nav>
       <main class="row">
+        <!-- The main content area of the page, displays all the forms, posts, comments and more. -->
         {% block content %}
         {% endblock %}
       </main>

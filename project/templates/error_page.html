@@ -16,6 +16,10 @@
   {% endif %}
 {% endblock %}
 
+<!--
+  Render the main area of the error page. Mainly appears when user tries to do forbidden actions (do like action in own posts, attempt to edit other people's posts)
+  or visit some page that is not handled by the system.
+-->
 {% block content %}
 <div class="col-md-12">
   <div class="alert alert-danger">
