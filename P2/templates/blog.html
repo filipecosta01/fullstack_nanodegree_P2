@@ -1,8 +1,11 @@
-<!DOCTYPE html>
 {% extends "base.html" %}
 
 {% block title %}
-The Blog - Main Posts
+<a class="blog-title" href="/blog">
+  <h1 class="text-uppercase text-center">
+    The Blog - Main Posts
+  </h1>
+</a>
 {% endblock %}
 
 {% block name_area %}
@@ -15,7 +18,7 @@ The Blog - Main Posts
   </h3>
 {% endblock %}
 
-{% block logged_area %}
+{% block action_area %}
   {% if user %}
   <a href="/logout">Logout</a>
   {% else %}
@@ -24,15 +27,16 @@ The Blog - Main Posts
 {% endblock %}
 
 {% block content %}
+<div class="col-md-12">
+  {% if user %}
   <form class="text-right" action="/blog/post/new" method="GET">
     <button type="submit" class="btn btn-submit text-right">
       Add a new Post
     </button>
   </form>
-  {% if not posts and user %}
+  {% endif %}
+  {% if not posts %}
   <h2 class="text-center">No posts were found in database.</h2>
-  {% elif not posts %}
-  <h2 class="text-center">No posts were found in database. Try again later.</h2>
   {% endif %}
 
   {% for post in posts %}
@@ -59,4 +63,5 @@ The Blog - Main Posts
       </article>
     </a>
   {% endfor %}
+</div>
 {% endblock %}

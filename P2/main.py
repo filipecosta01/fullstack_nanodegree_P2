@@ -29,7 +29,7 @@ import os
 import jinja2
 import webapp2
 import utils
-from auth import *
+from auth import verify_username, verify_password, verify_email, verify_match
 from user_model import User
 from post_model import Post
 from comment_model import Comment
@@ -37,14 +37,14 @@ from like_model import Like
 
 import time
 
-template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
 
 class Handler(webapp2.RequestHandler):
     def __init__(self, request, response):
         self.initialize(request, response)
 
-        uid = self.read_secure_cookie('user_id')
+        uid = self.read_secure_cookie("user_id")
         self.user = uid and User.by_id(int(uid))
 
     def write(self, *a, **kwargs):
@@ -87,7 +87,7 @@ class Handler(webapp2.RequestHandler):
         """
         TODO
         """
-        self.set_secure_cookie('user_id', str(user.key().id()))
+        self.set_secure_cookie("user_id", str(user.key().id()))
 
     def logout(self):
         """
@@ -101,6 +101,19 @@ class Handler(webapp2.RequestHandler):
         """
         webapp2.RequestHandler.initialize(self, *a, **kwargs)
 
+class BlogMain(Handler):
+    """
+    TODO: documentation
+    """
+    def get(self):
+        """
+        TODO: documentation
+        """
+        if self.user:
+            self.redirect("/blog")
+        else:
+            self.redirect("/login")
+
 class LogoutHandler(Handler):
     """
     TODO: documentation
@@ -110,7 +123,7 @@ class LogoutHandler(Handler):
         TODO: documentation
         """
         self.logout()
-        self.redirect("/signup")
+        self.redirect("/login")
 
 class LoginHandler(Handler):
     """
@@ -120,6 +133,8 @@ class LoginHandler(Handler):
         """
         TODO: documentation
         """
+        if self.user:
+            return self.redirect("/blog")
         self.render("login.html")
     def post(self):
         """
@@ -131,10 +146,10 @@ class LoginHandler(Handler):
         params = dict(username=input_username)
         error = False
         if not input_username:
-            params['invalid_username'] = "Username must be filled"
+            params["invalid_username"] = "Username must be filled"
             error = True
         if not input_password:
-            params['invalid_password'] = "Password must be filled"
+            params["invalid_password"] = "Password must be filled"
             error = True
 
         if error:
@@ -171,7 +186,7 @@ class WelcomeHandler(Handler):
         if self.user:
             self.render("welcome.html", username=self.user.username)
         else:
-            self.redirect('/signup')
+            self.redirect("/signup")
 
 class SignupHandler(Handler):
     """
@@ -181,6 +196,8 @@ class SignupHandler(Handler):
         """
         TODO: documentation
         """
+        if self.user:
+            return self.redirect("/blog")
         self.render("signup.html", username="", password="",
                     verify="", email="", invalid_username="",
                     invalid_password="", invalid_verify="", invalid_email="",
@@ -207,23 +224,23 @@ class SignupHandler(Handler):
         error = False
 
         if not valid_username:
-            params['invalid_username'] = "That's not a valid username"
+            params["invalid_username"] = "That's not a valid username"
             error = True
         else:
             if User.by_name(input_username):
-                params['invalid_username'] = "That user already exists."
+                params["invalid_username"] = "That user already exists."
                 error = True
 
         if not valid_password:
-            params['invalid_password'] = "That wasn't a valid password."
+            params["invalid_password"] = "That wasn't a valid password."
             error = True
 
         if not match:
-            params['not_match'] = "Your password didn't match."
+            params["not_match"] = "Your password didn't match."
             error = True
 
         if not valid_email:
-            params['invalid_email'] = "That's not a valid email."
+            params["invalid_email"] = "That's not a valid email."
             error = True
 
         if error:
@@ -239,7 +256,7 @@ class SignupHandler(Handler):
             self.redirect("/welcome")
 
 class BlogMainPosts(Handler):
-    def get(self, posts = ""):
+    def get(self, posts=""):
         posts = list(Post.get_all())
 
         self.render("blog.html", user=self.user, posts=posts)
@@ -269,14 +286,17 @@ class BlogShowPost(Handler):
         if post_id and post_id.isdigit():
             post = Post.by_id(int(post_id))
             if not post:
-                self.error(404)
-                return
+                return self.render("error_page.html", error="Post does not exists")
             comments = list(Comment.get_all(post))
 
-            self.render("single_post.html", user=self.user, post=post, comments=comments)
+            like = Like.get_like(user=self.user, post=post).get()
+            count_likes = Like.count_likes(post=post)
+
+            self.render("single_post.html", user=self.user, post=post, like=like,
+                        count_likes=count_likes, comments=comments
+                       )
         else:
-            self.error(404)
-            return
+            return self.render("error_page.html", error="Post does not exists")
 
     def post(self, post_id):
         post = Post.by_id(int(post_id))
@@ -311,7 +331,7 @@ class BlogEditPost(Handler):
             return self.render("edit_post.html", user=self.user, subject=post.subject,
                                content=post.content, post=post)
         else:
-            return self.render("error_page.html", error="The post does not exists")
+            return self.render("error_page.html", error="Post does not exists")
 
     def post(self, post_id):
         input_subject = self.request.get("subject")
@@ -333,6 +353,48 @@ class BlogEditPost(Handler):
             post_id = post.key().id()
             self.redirect("/blog/post/%s"%post_id)
 
+class BlogDeletePost(Handler):
+    def post(self, post_id):
+        if post_id:
+            post = Post.by_id(int(post_id))
+            if not post:
+                return self.render("error_page.html", error="Post does not exists")
+            if not (self.user and post.user.key().id() == self.user.key().id()):
+                return self.render("error_page.html", error="You are not the owner of this post")
+
+            post.delete()
+
+            time.sleep(0.5)
+
+            return self.redirect("/blog")
+        else:
+            return self.render("error_page.html", error="Post does not exists")
+
+class BlogLikePost(Handler):
+    def post(self, post_id):
+        post = Post.by_id(int(post_id))
+        user = self.user
+        if not post:
+            error_message = "You can't like posts that does not exists"
+            return self.render("error_page.html", error=error_message)
+        else:
+            like = Like.get_like(user=user, post=post).get()
+            if post and user and post.user.key().id() == user.key().id():
+                error_message = "You can't like your own posts"
+                return self.render("error_page.html", error=error_message)
+            if like and like.do_like:
+                like.do_like = False
+            elif like and not like.do_like:
+                like.do_like = True
+            else:
+                like = Like(post=post, user=self.user, do_like=True)
+
+            like.put()
+
+            time.sleep(0.5)
+
+            self.redirect("/blog/post/%s" % post_id)
+
 class BlogEditComment(Handler):
     def get(self, comment_id):
         if comment_id:
@@ -344,7 +406,7 @@ class BlogEditComment(Handler):
 
             return self.render("single_comment.html", user=self.user, comment=comment)
         else:
-            return self.render("error_page.html", error="The comment does not exists")
+            return self.render("error_page.html", error="Comment does not exists")
 
     def post(self, comment_id):
         input_comment = self.request.get("comment")
@@ -385,15 +447,24 @@ class BlogError(Handler):
 
 
 app = webapp2.WSGIApplication([
-    ('/signup', SignupHandler),
-    ('/welcome', WelcomeHandler),
-    ('/login', LoginHandler),
-    ('/logout', LogoutHandler),
-    ('/blog', BlogMainPosts),
-    ('/blog/post/new', BlogNewPost),
-    ('/blog/post/([0-9]+)', BlogShowPost),
-    ('/blog/post/edit/([0-9]+)', BlogEditPost),
-    ('/blog/comment/edit/([0-9]+)', BlogEditComment),
-    ('/blog/comment/delete/([0-9]+)', BlogDeleteComment),
-    ('/error', BlogError)
+    ("/", BlogMain),
+    ("/signup", SignupHandler),
+    ("/welcome", WelcomeHandler),
+    ("/login", LoginHandler),
+    ("/logout", LogoutHandler),
+    ("/blog", BlogMainPosts),
+    ("/blog/post/new", BlogNewPost),
+    ("/blog/post/([0-9]+)", BlogShowPost),
+    ("/blog/post/edit/([0-9]+)", BlogEditPost),
+    ("/blog/post/delete/([0-9]+)", BlogDeletePost),
+    ("/blog/post/like/([0-9]+)", BlogLikePost),
+    ("/blog/comment/edit/([0-9]+)", BlogEditComment),
+    ("/blog/comment/delete/([0-9]+)", BlogDeleteComment),
+    ("/error", BlogError)
 ], debug=True)
+
+def handle_404(request, response, exception):
+    blog_error = BlogError(request, response)
+    return blog_error.get("Page not found")
+
+app.error_handlers[404] = handle_404

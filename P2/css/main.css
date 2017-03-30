@@ -36,7 +36,7 @@ body {
   background-color: #d4d4d4;
 }
 
-.logout-text {
+.action-area-text {
   font-size: 18px;
   align-self: center;
   align-items: flex-end;
@@ -110,4 +110,9 @@ body {
 .edit-post-buttons {
   align-self: flex-end;
   margin-bottom: 5px;
+}
+
+.likes-info {
+  color: #8d4792;
+  font-weight: bold;
 }

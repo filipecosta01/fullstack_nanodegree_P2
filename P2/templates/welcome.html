@@ -1,9 +1,42 @@
-<!DOCTYPE html>
-<html>
-  <header>
-    <title>Welcome Page Example</title>
-  </header>
-  <body>
-    <h1>Welcome, {{username}}</h1>
-  </body>
-</html>
+
+{% extends "base.html" %}
+
+{% block title %}
+<a class="blog-title" href="/blog">
+  <h1 class="text-uppercase text-center">
+    The Blog - Welcome
+  </h1>
+</a>
+{% endblock %}
+
+{% block action_area %}
+  <a href="/blog">Go to THE BLOG</a>
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12 text-center">
+  <h1 class="text-center">Welcome, {{username}}.</h1>
+  <h3>You're now logged in into THE BLOG.</h3>
+
+  <hr >
+
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 text-left">
+      <h4 class="text-center">Some info about THE BLOG</h4>
+      <ul>
+        <li>Only authorized users (have registered themselves) can post and like posts.</li>
+        <li>Only other authorized people can post comments inside a post, and like own posts are forbidden.</li>
+        <li>The navigation bar contains the title of the page you're currently seeing, and clicking in the main title will lead you to the previous page (or the main one).</li>
+      <ul>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+
+  <hr >
+  <form method="GET">
+    <div class="form-group">
+      <button class="btn btn-submit" type="submit" formaction="/blog">Click here to go to main page</button>
+    </div>
+</div>
+{% endblock %}

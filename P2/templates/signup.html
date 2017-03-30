@@ -1,37 +1,75 @@
-<!DOCTYPE html>
-<html>
-  <header>
-    <title>Sign Up Example with Validation</title>
-  </header>
+{% extends "base.html" %}
 
-  <body>
-    <h1>Sign Up</h1>
-    <form method="post">
-      <label>
-        Username
-        <input name="username" type="text" value="{{username}}">
-        <span style="color: red;">{{invalid_username}}</span>
-      </label>
+{% block title %}
+<a class="blog-title" href="/signup">
+  <h1 class="text-uppercase text-center">
+    The Blog - Sign Up
+  </h1>
+</a>
+{% endblock %}
+
+{% block action_area %}
+  <a href="/blog">Go to THE BLOG</a>
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12 text-center">
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <h1>Sign Up</h1>
+
       <br>
-      <label>
-        Password
-        <input name="password" type="password">
-        <span style="color: red;">{{invalid_password}}</span>
-      </label>
+
+      <h3>OR</h3>
+
       <br>
-      <label>
-        Verify Password
-        <input name="verify" type="password">
-        <span style="color: red;">{{not_match}}</span>
-      </label>
-      <br>
-      <label>
-        Email(optional)
-        <input name="email" type="text" value="{{email}}">
-        <span style="color: red;">{{invalid_email}}</span>
-      </label>
-      <br>
-      <input type="submit">
-    </form>
-  </body>
-</html>
+
+      <hr>
+      <a href="/login"><h3>Sign In with an Account</h3></a>
+      <hr>
+
+      <form class="text-left" method="POST">
+        <br>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input class="form-control" id="username" name="username" type="text" value="{{username}}">
+          <span style="color: red;">{{invalid_username}}</span>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="form-control" name="password" id="password" type="password">
+          <span style="color: red;">{{invalid_password}}</span>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+          <label for="verify">Confirm Password</label>
+          <input class="form-control" id="verify" name="verify" type="password">
+          <span style="color: red;">{{not_match}}</span>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+          <label for="email">Email (Optional)</label>
+          <input class="form-control" id="email" name="email" type="text" value="{{email}}">
+          <span style="color: red;">{{invalid_email}}</span>
+        </div>
+
+        <br>
+
+        <div class="form-group text-center">
+          <button class="btn btn-submit">Sign Up</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+</div>
+{% endblock %}
