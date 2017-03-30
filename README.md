@@ -31,7 +31,7 @@ You can test a fully working live demo following these steps:
    1. `dev_appserver.py`
 4. No errors should araise and `localhost:8080` is up and running
 
-## Deploy locally
+## Deploy to Google Cloud
 You can deploy a fully working live app following these steps:
 1. Go to `/project` folder in terminal
 2. Verify you can run the command below and insert `Y` for the input after running it
