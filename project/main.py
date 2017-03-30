@@ -43,11 +43,16 @@ from comment_model import Comment
 from like_model import Like
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
-JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR), autoescape=True)
+JINJA_ENV = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
+    autoescape=True
+)
+
 
 class Handler(webapp2.RequestHandler):
     """
-    Default webapp2 handler, all handlers must pass this default when instantiated.
+    Default webapp2 handler, all handlers must pass this default when
+    instantiated.
     """
     def __init__(self, request, response):
         self.initialize(request, response)
@@ -81,7 +86,7 @@ class Handler(webapp2.RequestHandler):
         cookie_val = utils.make_secure_val(val)
         self.response.headers.add_header(
             "Set-Cookie",
-            "%s=%s; Path=/" %(name, cookie_val)
+            "%s=%s; Path=/" % (name, cookie_val)
         )
 
     def read_secure_cookie(self, name):
@@ -109,6 +114,7 @@ class Handler(webapp2.RequestHandler):
         """
         webapp2.RequestHandler.initialize(self, *a, **kwargs)
 
+
 class BlogMain(Handler):
     """
     Handler for the main page of the blog.
@@ -124,6 +130,7 @@ class BlogMain(Handler):
         else:
             self.redirect("/login")
 
+
 class LoginHandler(Handler):
     """
     Handler for the login page.
@@ -137,11 +144,13 @@ class LoginHandler(Handler):
         if self.user:
             return self.redirect("/blog/posts")
         self.render("login.html")
+
     def post(self):
         """
         POST method for the /login action.
-        Verifies the user's input, check if an user exists with the credentials provided
-        and redirects to the welcome page if yes, stay in the same page and show errors if no.
+        Verifies the user's input, check if an user exists with the
+        credentials provided and redirects to the welcome page if yes,
+        stay in the same page and show errors if no.
         """
         input_username = self.request.get("username")
         input_password = self.request.get("password")
@@ -161,7 +170,8 @@ class LoginHandler(Handler):
 
         user = User.by_name(input_username)
         if user:
-            if utils.check_valid_pw(user.username, input_password, user.pw_hash):
+            if utils.check_valid_pw(user.username, input_password,
+                                    user.pw_hash):
                 self.login(user)
 
                 self.redirect("/welcome")
@@ -190,6 +200,7 @@ class LogoutHandler(Handler):
         self.logout()
         self.redirect("/login")
 
+
 class WelcomeHandler(Handler):
     """
     Handler for the welcome page.
@@ -197,13 +208,15 @@ class WelcomeHandler(Handler):
     def get(self):
         """
         GET method for /welcome action.
-        Check if user is authenticated to show further instructions in the welcome page.
+        Check if user is authenticated to show further instructions in the
+        welcome page.
         If not, redirects to the login page.
         """
         if self.user:
             self.render("welcome.html", username=self.user.username)
         else:
             self.redirect("/login")
+
 
 class SignupHandler(Handler):
     """
@@ -220,15 +233,16 @@ class SignupHandler(Handler):
 
         return self.render("signup.html", username="", password="",
                            verify="", email="", invalid_username="",
-                           invalid_password="", invalid_verify="", invalid_email="",
-                           not_match=""
-                          )
+                           invalid_password="", invalid_verify="",
+                           invalid_email="", not_match="")
+
     def post(self):
         """
         POST method for the /signup action.
-        Validates the inputs and redirects the user to the welcome page if validations are ok.
-        If not, render the signup page, keeping the username and email values, and show error
-        messages.
+        Validates the inputs and redirects the user to the welcome page if
+        validations are ok.
+        If not, render the signup page, keeping the username and email values,
+        and show error messages.
         """
         input_username = self.request.get("username")
         input_password = self.request.get("password")
@@ -268,15 +282,19 @@ class SignupHandler(Handler):
 
         if error:
             self.render("signup.html", **params)
+
         else:
-            encrypted_password = utils.make_pw_hash(input_username, input_password)
+            encrypted_password = utils.make_pw_hash(input_username,
+                                                    input_password)
             user = User(
-                username=input_username, pw_hash=encrypted_password, email=input_email)
+                username=input_username, pw_hash=encrypted_password,
+                email=input_email)
             user.put()
 
             self.set_secure_cookie("user_id", str(user.key().id()))
 
             self.redirect("/welcome")
+
 
 class BlogMainPosts(Handler):
     """
@@ -291,6 +309,7 @@ class BlogMainPosts(Handler):
 
         self.render("blog.html", user=self.user, posts=posts)
 
+
 class BlogNewPost(Handler):
     """
     Handler for the new post's page.
@@ -300,14 +319,23 @@ class BlogNewPost(Handler):
         GET method for /blog/post/new action.
         Render the new post's page.
         """
+
+        if not self.user:
+            return self.redirect("/login")
         self.render("new_post.html", user=self.user)
 
     def post(self):
         """
         POST method for /blog/post/new action.
-        Validates the inputs and redirects the user to the post page if validations are ok.
-        If not, render the new post's page, keeping the field values, and show error messages.
+        Validates the inputs and redirects the user to the post page if
+        validations are ok.
+        If not, render the new post's page, keeping the field values, and
+        show error messages.
         """
+
+        if not self.user:
+            return self.redirect("/login")
+
         input_subject = self.request.get("subject")
         input_content = self.request.get("content")
 
@@ -315,13 +343,14 @@ class BlogNewPost(Handler):
             error_message = "Please inform subject and content"
             self.render("new_post.html",
                         error_message=error_message,
-                        subject=input_subject, content=input_content
-                       )
+                        subject=input_subject, content=input_content)
         else:
-            post = Post(subject=input_subject, content=input_content, user=self.user)
+            post = Post(subject=input_subject, content=input_content,
+                        user=self.user)
             post.put()
             post_id = post.key().id()
             self.redirect("/blog/post/%s" % post_id)
+
 
 class BlogShowPost(Handler):
     """
@@ -335,23 +364,26 @@ class BlogShowPost(Handler):
         if post_id and post_id.isdigit():
             post = Post.by_id(int(post_id))
             if not post:
-                return self.render("error_page.html", error="Post does not exists")
+                return self.render("error_page.html",
+                                   error="Post does notexists")
+
             comments = list(Comment.get_all(post))
 
             like = Like.get_like(user=self.user, post=post).get()
             count_likes = Like.count_likes(post=post)
 
             self.render("show_post.html", user=self.user, post=post, like=like,
-                        count_likes=count_likes, comments=comments
-                       )
+                        count_likes=count_likes, comments=comments)
         else:
             return self.render("error_page.html", error="Post does not exists")
 
     def post(self, post_id):
         """
         POST method for /blog/post/<post_id> action.
-        Validates the inputs and redirects the user to the post page if validations are ok.
-        If not, render the post's page, keeping the field values, and show error messages.
+        Validates the inputs and redirects the user to the post page if
+        validations are ok.
+        If not, render the post's page, keeping the field values, and show
+        error messages.
         """
         post = Post.by_id(int(post_id))
         input_comment = self.request.get("comment")
@@ -363,8 +395,7 @@ class BlogShowPost(Handler):
             comment_error = True
             return self.render("show_post.html",
                                user=self.user, post=post, comments=comments,
-                               comment_error=comment_error
-                              )
+                               comment_error=comment_error)
 
         comment = Comment(comment=input_comment, user=self.user, post=post)
         comment.put()
@@ -372,6 +403,7 @@ class BlogShowPost(Handler):
         time.sleep(0.5)
 
         self.redirect("/blog/post/%s" % post_id)
+
 
 class BlogEditPost(Handler):
     """
@@ -382,14 +414,20 @@ class BlogEditPost(Handler):
         GET method for /blog/post/edit/<post_id> action.
         Render the edit post's page.
         """
+
+        if not self.user:
+            return self.redirect("/login")
         if post_id:
             post = Post.by_id(int(post_id))
             if not post:
-                return self.render("error_page.html", error="Post does not exists")
-            if not (self.user and post.user.key().id() == self.user.key().id()):
-                return self.render("error_page.html", error="You are not the owner of this post")
+                return self.render("error_page.html",
+                                   error="Post does notexists")
+            if post.user.key().id() != self.user.key().id():
+                return self.render("error_page.html",
+                                   error="You are not the owner of this post")
 
-            return self.render("edit_post.html", user=self.user, subject=post.subject,
+            return self.render("edit_post.html", user=self.user,
+                               subject=post.subject,
                                content=post.content, post=post)
         else:
             return self.render("error_page.html", error="Post does not exists")
@@ -397,27 +435,34 @@ class BlogEditPost(Handler):
     def post(self, post_id):
         """
         POST method for /blog/post/edit/<post_id> action.
-        Validates the inputs and redirects the user to the post page if validations are ok.
-        If not, render the edit post's page, keeping the field values, and show error messages.
+        Validates the inputs and redirects the user to the post page if
+        validations are ok.
+        If not, render the edit post's page, keeping the field values, and
+        show error messages.
         """
+
+        if not self.user:
+            return self.redirect("/login")
+
         input_subject = self.request.get("subject")
         input_content = self.request.get("content")
+
+        post = Post.by_id(int(post_id))
 
         if not (input_subject and input_content):
             error_message = "Please inform subject and content"
             self.render("edit_post.html",
                         error_message=error_message,
                         subject=input_subject, content=input_content,
-                        post=post
-                       )
+                        post=post)
         else:
-            post = Post.by_id(int(post_id))
             post.subject = input_subject
             post.content = input_content
             post.put()
 
             post_id = post.key().id()
             self.redirect("/blog/post/%s" % post_id)
+
 
 class BlogDeletePost(Handler):
     """
@@ -426,15 +471,21 @@ class BlogDeletePost(Handler):
     def post(self, post_id):
         """
         POST method for /blog/post/delete/<post_id> action.
-        Validates the current user and if they can delete the post and remove it from
-        database.
+        Validates the current user and if they can delete the post and remove
+        it from database.
         """
+
+        if not self.user:
+            return self.redirect("/login")
+
         if post_id:
             post = Post.by_id(int(post_id))
             if not post:
-                return self.render("error_page.html", error="Post does not exists")
-            if not (self.user and post.user.key().id() == self.user.key().id()):
-                return self.render("error_page.html", error="You are not the owner of this post")
+                return self.render("error_page.html",
+                                   error="Post does not exists")
+            if post.user.key().id() != self.user.key().id():
+                return self.render("error_page.html",
+                                   error="You are not the owner of this post")
 
             post.delete()
 
@@ -443,6 +494,7 @@ class BlogDeletePost(Handler):
             return self.redirect("/blog/posts")
         else:
             return self.render("error_page.html", error="Post does not exists")
+
 
 class BlogLikePost(Handler):
     """
@@ -454,6 +506,10 @@ class BlogLikePost(Handler):
         Validates the current user and if they can like the post and insert
         a new like row on database.
         """
+
+        if not self.user:
+            return self.redirect("/login")
+
         post = Post.by_id(int(post_id))
         user = self.user
         if not post:
@@ -461,7 +517,7 @@ class BlogLikePost(Handler):
             return self.render("error_page.html", error=error_message)
         else:
             like = Like.get_like(user=user, post=post).get()
-            if post and user and post.user.key().id() == user.key().id():
+            if post and post.user.key().id() == user.key().id():
                 error_message = "You can't like your own posts"
                 return self.render("error_page.html", error=error_message)
             if like and like.do_like:
@@ -477,6 +533,7 @@ class BlogLikePost(Handler):
 
             self.redirect("/blog/post/%s" % post_id)
 
+
 class BlogEditComment(Handler):
     """
     Handler for the comment in posts action.
@@ -486,36 +543,52 @@ class BlogEditComment(Handler):
         GET method for /blog/comment/edit/<comment_id> action.
         Render the edit comments's page.
         """
+
+        if not self.user:
+            return self.redirect("/login")
+
         if comment_id:
             comment = Comment.by_id(int(comment_id))
             if not comment:
-                return self.render("error_page.html", error="Comment does not exists")
-            if not (self.user and comment.user.key().id() == self.user.key().id()):
-                return self.render("error_page.html", error="You are not the owner of this comment")
+                return self.render("error_page.html",
+                                   error="Comment does not exists")
+            if comment.user.key().id() != self.user.key().id():
+                return self.render("error_page.html",
+                                   error="You are not the owner" +
+                                   "of this comment")
 
-            return self.render("edit_comment.html", user=self.user, comment=comment)
+            return self.render("edit_comment.html", user=self.user,
+                               comment=comment)
         else:
-            return self.render("error_page.html", error="Comment does not exists")
+            return self.render("error_page.html",
+                               error="Comment does not exists")
 
     def post(self, comment_id):
         """
         POST method for /blog/comment/edit/<comment_id> action.
-        Validates the inputs and redirects the user to the post page if validations are ok.
-        If not, render the edit comment's page, keeping the field values, and show error messages.
+        Validates the inputs and redirects the user to the post page
+        if validations are ok.
+        If not, render the edit comment's page, keeping the field values,
+        and show error messages.
         """
+
+        if not self.user:
+            return self.redirect("/login")
+
         input_comment = self.request.get("comment")
         comment = Comment.by_id(int(comment_id))
 
         if not input_comment:
             comment_error = True
-            return self.render("edit_comment.html", user=self.user, comment=comment,
-                               comment_error=comment_error)
+            return self.render("edit_comment.html", user=self.user,
+                               comment=comment, comment_error=comment_error)
         comment.comment = input_comment
         comment.put()
 
         time.sleep(0.5)
 
-        return self.redirect("/blog/post/%s" %comment.post.key().id())
+        return self.redirect("/blog/post/%s" % comment.post.key().id())
+
 
 class BlogDeleteComment(Handler):
     """
@@ -527,6 +600,10 @@ class BlogDeleteComment(Handler):
         Validates the current user and if they can delete the post and remove
         the comment from the database.
         """
+
+        if not self.user:
+            return self.redirect("/login")
+
         comment = Comment.by_id(int(comment_id))
 
         if comment.user.key().id() == self.user.key().id():
@@ -536,7 +613,9 @@ class BlogDeleteComment(Handler):
 
             return self.redirect("/blog/post/%s" % comment.post.key().id())
         else:
-            return self.redirect("/blog/post/%s" % comment.post.key().id(), error=True)
+            return self.redirect("/blog/post/%s" % comment.post.key().id(),
+                                 error=True)
+
 
 class BlogError(Handler):
     """
@@ -549,8 +628,8 @@ class BlogError(Handler):
         """
         if not error:
             return self.render("error_page.html",
-                               error="Something wrong happened or an invalid action was dispatched."
-                              )
+                               error="Something wrong happened or an invalid" +
+                               "action was dispatched.")
 
         self.render("error_page.html", error=error)
 
@@ -572,6 +651,7 @@ app = webapp2.WSGIApplication([
     ("/error", BlogError)
 ], debug=True)
 
+
 def handle_404(request, response, exception):
     """
     Handle 404 responses for the requests in the blog.
@@ -579,5 +659,6 @@ def handle_404(request, response, exception):
     logging.exception(exception)
     blog_error = BlogError(request, response)
     return blog_error.get("Page not found")
+
 
 app.error_handlers[404] = handle_404
