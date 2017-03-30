@@ -36,11 +36,13 @@ You can test a fully working live demo following these steps:
 ## Deploy to Google Cloud
 You can deploy a fully working live app following these steps:
 1. Go to `/project` folder in terminal
-2. Verify you can run the command below and insert `Y` for the input after running it
+2. Set a default project where you want to deploy the application (after creating it):
+   1. `gcloud config set project <your_project_name>`
+3. Verify you can run the command below and insert `Y` for the input after running it
    1. `gcloud app deploy`
-3. VERY IMPORTANT STEP: GAE uses index on tables to improve performance and make sure users are not consuming a lot
+4. VERY IMPORTANT STEP: GAE uses index on tables to improve performance and make sure users are not consuming a lot
 of resources (freemium account, so don't abuse rule :) ). The file `index.yaml` must be sent to the server. Just run:
-   1. `gcloud app datastore create-indexes index.yaml`
+   1. `gcloud datastore create-indexes index.yaml`
 4. Wait for some time until the indexes are updated and created. You can follow the status in [here](https://console.cloud.google.com/datastore/indexes)
 5. No errors should araise and your project should be running on `https://<your_gae_project>.appspot.com`
 
