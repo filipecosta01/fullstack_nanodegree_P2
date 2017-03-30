@@ -1,4 +1,4 @@
-Udacity - Blog Website - Project 2 - Filipe Costa
+Udacity - Multi User Blog - Project 2 - Filipe Costa
 ============
 
 This is a front-end (HTML, CSS, front-end frameworks like Bootstrap) and back-end (Python with Jinja2 and Google App Engine - GAE)
