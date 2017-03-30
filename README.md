@@ -12,6 +12,8 @@ Sensitive information (like password) of the blog is stored using hash algorithm
 This project use external library other than the ones included in Python Source Libraries.
 The external libraries are:
 1. google.appengine
+2. jinja2
+3. webapp2
 
 Please make sure to have it installed before moving forward.
 Aditional instructions on how to install GAE (MacOS ONLY) are provided below:

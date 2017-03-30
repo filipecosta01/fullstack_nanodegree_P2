@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-<a class="blog-title" href="/blog">
+<a class="blog-title" href="/blog/posts">
   <h1 class="text-uppercase text-center">
     The Blog - New Post
   </h1>
@@ -50,7 +50,7 @@
     </div>
     <br>
     <button class="btn btn-submit" type="submit">Submit</button>
-    <button class="btn btn-warning" formmethod="GET" formaction="/blog" type="submit">Cancel</button>
+    <button class="btn btn-warning" formmethod="GET" formaction="/blog/posts" type="submit">Cancel</button>
   </form>
 </div>
 {% endblock %}

@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-<a class="blog-title" href="/blog">
+<a class="blog-title" href="/blog/posts">
   <h1 class="text-uppercase text-center">
     The Blog - Welcome
   </h1>
@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block action_area %}
-<a href="/blog">Go to THE BLOG</a>
+<a href="/blog/posts">Go to THE BLOG</a>
 {% endblock %}
 
 <!-- Render the main area of the welcome page. Only authenticated users will access this page. -->
@@ -39,7 +39,7 @@
 
   <form method="GET">
     <div class="form-group">
-      <button class="btn btn-submit" type="submit" formaction="/blog">Go to THE BLOG</button>
+      <button class="btn btn-submit" type="submit" formaction="/blog/posts">Go to THE BLOG</button>
     </div>
   </form>
 </div>
