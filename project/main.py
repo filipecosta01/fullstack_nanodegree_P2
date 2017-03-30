@@ -449,6 +449,10 @@ class BlogEditPost(Handler):
 
         post = Post.by_id(int(post_id))
 
+        if post.user.key().id() != self.user.key().id():
+            return self.render("error_page.html",
+                               error="You are not the owner of this post")
+
         if not (input_subject and input_content):
             error_message = "Please inform subject and content"
             self.render("edit_post.html",
@@ -577,6 +581,10 @@ class BlogEditComment(Handler):
 
         input_comment = self.request.get("comment")
         comment = Comment.by_id(int(comment_id))
+
+        if comment.user.key().id() != self.user.key().id():
+            return self.render("error_page.html",
+                               error="You are not the owner of this comment")
 
         if not input_comment:
             comment_error = True
